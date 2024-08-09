@@ -18,11 +18,13 @@ namespace ApiGym.Data
             modelBuilder.Entity<Usuario>(entity =>{
                 entity.ToTable("Usuario");
                 entity.HasKey(u => u.Id);
+                entity.Property(u => u.Id).ValueGeneratedOnAdd();
             });
 
             modelBuilder.Entity<Miembro>(entity =>{
                 entity.ToTable("Miembro");
                 entity.HasKey(m => m.Id);
+                entity.Property(m => m.Id).ValueGeneratedOnAdd();
                 entity.HasOne(m => m.Usuario)
                 .WithOne(u => u.Miembro)
                 .HasForeignKey<Miembro>(m => m.UsuarioId)
@@ -33,6 +35,7 @@ namespace ApiGym.Data
             modelBuilder.Entity<Instructor>(entity =>{
                 entity.ToTable("Instructor");
                 entity.HasKey(i => i.Id);
+                entity.Property(i => i.Id).ValueGeneratedOnAdd();
                 entity.HasOne(i => i.Usuario)
                 .WithOne(u => u.Instructor)
                 .HasForeignKey<Instructor>(i => i.UsuarioId)

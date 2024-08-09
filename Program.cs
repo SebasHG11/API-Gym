@@ -44,6 +44,7 @@ builder.Services.AddDbContext<GymContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlString")));
 
 builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<IMiembroService, MiembroService>();
 
 var app = builder.Build();
 
