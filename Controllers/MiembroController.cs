@@ -30,5 +30,15 @@ namespace ApiGym.Controllers {
             }
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutMiembro(int id, [FromBody] MiembroDTO miembroDTO) {
+            try{
+                await _miembroService.EditarMiembro(id, miembroDTO);
+                return Ok();
+            } catch(Exception ex) {
+                return BadRequest(new { message = "Error al intentar editar el miembro", details = ex.Message });
+            }
+        }
+
     }
 }

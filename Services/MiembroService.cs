@@ -74,10 +74,32 @@ namespace ApiGym.Services {
                 throw new Exception("Ocurrio un error al intentar creat el miembro: ", ex);
             }
         }
+
+        public async Task EditarMiembro(int id, MiembroDTO miembroDTO) {
+            var miembroActual = await _context.Miembros
+            .Include(m => m.Usuario)
+            .FirstOrDefaultAsync(m => m.Id == id);
+
+            if(miembroActual == null) {
+                throw new KeyNotFoundException("El miembro con el ID proporcionado no existe.");
+            }
+
+            try{
+                miembroActual.Nombre = miembroDTO.Nombre;
+                miembroActual.Usuario.UserName = miembroDTO.UserName;
+                miembroActual.Usuario.Email = miembroDTO.Email;
+                miembroActual.Usuario.HashContraseña = miembroDTO.HashContraseña;
+
+                await _context.SaveChangesAsync();
+            } catch(Exception ex) {
+                throw new Exception("Error al intentar editar el miembro", ex);
+            }
+        }
     }
     public interface IMiembroService {
         IEnumerable<MiembroDTO> MostrarMiembros();
         MiembroDTO MostrarMiembroPorId(int id);
         Task CrearMiembro(MiembroDTO miembroDTO);
+        Task EditarMiembro(int id, MiembroDTO miembroDTO);
     }
 }
