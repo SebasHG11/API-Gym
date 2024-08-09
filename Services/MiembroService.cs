@@ -42,9 +42,7 @@ namespace ApiGym.Services {
         }
 
         public async Task CrearMiembro(MiembroDTO miembroDTO) {
-            if(miembroDTO == null) {
-                throw new ArgumentNullException(nameof(miembroDTO), "El DTO del miembro no puede ser nulo.");
-            }
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
             try{
                 var usuarioNuevo = new Usuario {
@@ -69,7 +67,10 @@ namespace ApiGym.Services {
                 await _context.Miembros.AddAsync(miembroNuevo);
                 await _context.SaveChangesAsync();
                 
+                await transaction.CommitAsync();
+
             } catch(Exception ex) {
+                await transaction.RollbackAsync();
                 throw new Exception("Ocurrio un error al intentar creat el miembro: ", ex);
             }
         }
