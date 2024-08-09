@@ -11,7 +11,7 @@ namespace ApiGym.Controllers {
         }
 
         [HttpPost]
-        public IActionResult PostLogin (LoginUser loginUser) {
+        public IActionResult PostLogin ([FromBody] LoginUser loginUser) {
             var usuario = _loginService.Autenticar(loginUser);
 
             if(usuario != null) {
