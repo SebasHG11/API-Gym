@@ -19,6 +19,7 @@ namespace ApiGym.Data
                 entity.ToTable("Usuario");
                 entity.HasKey(u => u.Id);
                 entity.Property(u => u.Id).ValueGeneratedOnAdd();
+                entity.HasIndex(u => u.UserName).IsUnique();
             });
 
             modelBuilder.Entity<Miembro>(entity =>{
