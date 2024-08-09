@@ -1,0 +1,56 @@
+# Archivos y carpetas generados por .NET
+bin/
+obj/
+out/
+
+# Archivos de configuración del entorno local
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+
+# Archivos de base de datos
+*.mdf
+*.ldf
+
+# Archivos de migraciones generados por EF Core (opcional)
+Migrations/
+
+# Archivos de usuario de Visual Studio
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Archivos de usuario de Rider
+.idea/
+
+# Archivos de usuario de Visual Studio Code
+.vscode/
+
+# Paquetes NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+
+# Dependencias de Node.js (si aplicable)
+node_modules/
+
+# Archivos temporales
+*.tmp
+*.temp
+*.log
+
+# Archivos de pruebas
+TestResults/
+
+# Archivos de cache de herramientas de desarrollo
+*.cache
+*.tmp
+
+# Archivos generados por la herramienta de documentación
+docs/
+
+# Archivos específicos del sistema operativo
+.DS_Store
+Thumbs.db
