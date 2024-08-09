@@ -95,11 +95,36 @@ namespace ApiGym.Services {
                 throw new Exception("Error al intentar editar el miembro", ex);
             }
         }
+
+        public async Task EliminarMiembro(int id) {
+            var miembroActual = await _context.Miembros.Include(m => m.Usuario).FirstOrDefaultAsync(m => m.Id == id);
+
+            if(miembroActual == null) {
+                throw new KeyNotFoundException("El miembro con el ID proporcionado no existe.");
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try{
+                _context.Miembros.Remove(miembroActual);
+                await _context.SaveChangesAsync();
+
+                var usuarioActual = await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == miembroActual.UsuarioId);
+                _context.Usuarios.Remove(usuarioActual);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            } catch(Exception ex) {
+                await transaction.RollbackAsync();
+                throw new Exception("Error al intentar eliminar este miembro", ex);
+            }
+        }
     }
     public interface IMiembroService {
         IEnumerable<MiembroDTO> MostrarMiembros();
         MiembroDTO MostrarMiembroPorId(int id);
         Task CrearMiembro(MiembroDTO miembroDTO);
         Task EditarMiembro(int id, MiembroDTO miembroDTO);
+        Task EliminarMiembro(int id);
     }
 }

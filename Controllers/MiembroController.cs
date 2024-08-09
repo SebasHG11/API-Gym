@@ -40,5 +40,14 @@ namespace ApiGym.Controllers {
             }
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteMiembro(int id) {
+            try{
+                await _miembroService.EliminarMiembro(id);
+                return Ok();
+            } catch(Exception ex) {
+                return BadRequest(new { message = "Error al intentar eliminar el miembro.", details = ex.Message });
+            }
+        }
     }
 }
