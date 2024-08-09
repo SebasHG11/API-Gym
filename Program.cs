@@ -1,4 +1,5 @@
 using ApiGym.Data;
+using ApiGym.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<GymContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlString")));
+
+builder.Services.AddScoped<ILoginService, LoginService>();
 
 var app = builder.Build();
 
