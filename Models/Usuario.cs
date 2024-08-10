@@ -15,9 +15,7 @@ namespace ApiGym.Models
         public string HashContraseña { get; set; }
         [Required]
         public string Rol { get; set; }
-        [JsonIgnore]
         public Miembro? Miembro { get; set; }
-        [JsonIgnore]
         public Instructor? Instructor { get; set; }
     }
 }

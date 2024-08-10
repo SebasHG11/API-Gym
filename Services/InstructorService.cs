@@ -76,10 +76,65 @@ namespace ApiGym.Services {
                 throw new Exception("Ocurrio un error al crear un instructor", ex);
             }
         }
+
+        public async Task EditarInstructor(int id, InstructorDTO instructorDTO) {
+            var instructorActual = await _context.Instructors
+            .Include(i => i.Usuario)
+            .FirstOrDefaultAsync(i => i.Id == id);
+
+            if(instructorActual == null) {
+                throw new KeyNotFoundException  ("El usuario con el ID ingresada no existe.");
+            }
+
+            try{
+                instructorActual.Nombre = instructorDTO.Nombre ?? instructorActual.Nombre;
+                instructorActual.Especialidad = instructorDTO.Especialidad ?? instructorActual.Especialidad;
+
+                instructorActual.Usuario.UserName = instructorDTO.UserName ?? instructorActual.Usuario.UserName;
+                instructorActual.Usuario.Email = instructorDTO.Email ?? instructorActual.Usuario.Email;
+                instructorActual.Usuario.HashContraseña = instructorDTO.HashContraseña ?? instructorActual.Usuario.HashContraseña;
+
+                await _context.SaveChangesAsync();
+            } catch (DbUpdateException dbEx) {
+                throw new Exception("Error al intentar actualizar la base de datos.", dbEx);
+            } catch (Exception ex) {
+                throw new Exception("Se presentó un error al editar el instructor.", ex);
+            }
+        }
+
+        public async Task EliminarInstructor(int id) {
+            var instructorActual = await _context.Instructors
+            .Include(i => i.Usuario)
+            .FirstOrDefaultAsync(i => i.Id == id);
+
+            if(instructorActual == null) {
+                throw new KeyNotFoundException  ("El usuario con el ID ingresada no existe.");
+            }
+
+            var usuarioActual = await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.Id == instructorActual.UsuarioId);
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try{
+                _context.Instructors.Remove(instructorActual);
+                await _context.SaveChangesAsync();
+
+                _context.Usuarios.Remove(usuarioActual);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            } catch(Exception ex) {
+                await transaction.RollbackAsync();
+                throw new Exception("Error al intentar eliminar el instructor", ex);
+            }
+        }
     }
     public interface IInstructorService {
         IEnumerable<InstructorDTO> MostrarInstructores();
         InstructorDTO MostrarInstructorPorId(int id);
         Task CrearInstructor(InstructorDTO instructorDTO);
+        Task EditarInstructor(int id, InstructorDTO instructorDTO);
+        Task EliminarInstructor(int id);
     }
 }

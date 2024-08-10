@@ -29,5 +29,25 @@ namespace ApiGym.Controllers {
                 return BadRequest(new { message = "Error al crear instructor", details = ex.Message });
             }
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutInstructor(int id, [FromBody] InstructorDTO instructorDTO) {
+            try{
+                await _instructorService.EditarInstructor(id, instructorDTO);
+                return Ok();
+            } catch(Exception ex) {
+                return BadRequest(new { message = "Error al editar instructor", details = ex.Message });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteInstructor(int id) {
+            try{
+                await _instructorService.EliminarInstructor(id);
+                return Ok();
+            } catch(Exception ex) {
+                return BadRequest(new { message = "Error al intentar eliminar el instructor", details = ex.Message });
+            }
+        }
     }
 }

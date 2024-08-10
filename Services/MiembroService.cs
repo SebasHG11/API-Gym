@@ -52,7 +52,7 @@ namespace ApiGym.Services {
                         ?? throw new ArgumentNullException(nameof(miembroDTO.Email),"El email no puede ser nulo"),
                     HashContraseña =  miembroDTO.HashContraseña
                         ?? throw new ArgumentNullException(nameof(miembroDTO.HashContraseña), "La contraseña no puede ser nula"),
-                    Rol = "Miembro"
+                    Rol = "Miembro" ?? "Miembro"
                 };
 
                 await _context.Usuarios.AddAsync(usuarioNuevo);
@@ -71,7 +71,7 @@ namespace ApiGym.Services {
 
             } catch(Exception ex) {
                 await transaction.RollbackAsync();
-                throw new Exception("Ocurrio un error al intentar creat el miembro: ", ex);
+                throw new Exception("Ocurrio un error al intentar crear el miembro: ", ex);
             }
         }
 
