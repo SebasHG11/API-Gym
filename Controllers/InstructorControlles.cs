@@ -20,6 +20,11 @@ namespace ApiGym.Controllers {
             return Ok(_instructorService.MostrarInstructorPorId(id));
         }
 
+        [HttpGet("instructor/userid")]
+        public IActionResult GetInstructorByUserId(int userId) {
+            return Ok(_instructorService.MostrarInstructorPorUserId(userId));
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostInstructor([FromBody] InstructorDTO instructorDTO) {
             try{

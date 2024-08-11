@@ -15,9 +15,14 @@ namespace ApiGym.Controllers {
             return Ok(_miembroService.MostrarMiembros());
         }
 
-        [HttpGet("/id")]
+        [HttpGet("miembro")]
         public IActionResult GetMiembroById(int id) {
             return Ok(_miembroService.MostrarMiembroPorId(id));
+        }
+
+        [HttpGet("miembro/userid")]
+        public IActionResult GetMiembroByUserId(int userId) {
+            return Ok(_miembroService.MostrarMiembroPorUserId(userId));
         }
 
         [HttpPost]

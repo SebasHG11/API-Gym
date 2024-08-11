@@ -41,6 +41,24 @@ namespace ApiGym.Services {
             }
         }
 
+        public MiembroDTO MostrarMiembroPorUserId(int userId) {
+            var MiembroActual = _context.Miembros
+                .Include(m => m.Usuario)
+                .FirstOrDefault(m => m.UsuarioId == userId);
+
+            if(MiembroActual != null) {
+                return new MiembroDTO{
+                    Id = MiembroActual.Id,
+                    Nombre = MiembroActual.Nombre,
+                    UserName = MiembroActual.Usuario.UserName,
+                    Email = MiembroActual.Usuario.Email,
+                    Rol = MiembroActual.Usuario.Rol
+                };
+            } else {
+                throw new KeyNotFoundException("No se encontro el usuario");
+            }
+        }
+
         public async Task CrearMiembro(MiembroDTO miembroDTO) {
             using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -123,6 +141,7 @@ namespace ApiGym.Services {
     public interface IMiembroService {
         IEnumerable<MiembroDTO> MostrarMiembros();
         MiembroDTO MostrarMiembroPorId(int id);
+        MiembroDTO MostrarMiembroPorUserId(int userId);
         Task CrearMiembro(MiembroDTO miembroDTO);
         Task EditarMiembro(int id, MiembroDTO miembroDTO);
         Task EliminarMiembro(int id);

@@ -46,6 +46,26 @@ namespace ApiGym.Services {
             }
         }
 
+        public InstructorDTO MostrarInstructorPorUserId(int userId) {
+            var instructorActual = _context.Instructors
+            .Include(i => i.Usuario)
+            .FirstOrDefault(i => i.UsuarioId == userId);
+
+            if(instructorActual != null) {
+                return new InstructorDTO {
+                    Id = instructorActual.Id,
+                    Nombre = instructorActual.Nombre,
+                    UserName = instructorActual.Usuario.UserName,
+                    Email = instructorActual.Usuario.Email,
+                    HashContraseña = instructorActual.Usuario.HashContraseña,
+                    Rol = instructorActual.Usuario.Rol,
+                    Especialidad = instructorActual.Especialidad
+                };
+            } else {
+                throw new KeyNotFoundException("No se encontro el usuario");
+            }
+        }
+
         public async Task CrearInstructor(InstructorDTO instructorDTO) {
             using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -133,6 +153,7 @@ namespace ApiGym.Services {
     public interface IInstructorService {
         IEnumerable<InstructorDTO> MostrarInstructores();
         InstructorDTO MostrarInstructorPorId(int id);
+        InstructorDTO MostrarInstructorPorUserId(int userId);
         Task CrearInstructor(InstructorDTO instructorDTO);
         Task EditarInstructor(int id, InstructorDTO instructorDTO);
         Task EliminarInstructor(int id);
