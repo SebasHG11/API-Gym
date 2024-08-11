@@ -48,6 +48,7 @@ builder.Services.AddDbContext<GymContext>(options =>
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IMiembroService, MiembroService>();
 builder.Services.AddScoped<IInstructorService, InstructorService>();
+builder.Services.AddScoped<IClaseService, ClaseService>();
 
 var app = builder.Build();
 

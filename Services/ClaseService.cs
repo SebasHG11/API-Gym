@@ -43,7 +43,6 @@ namespace ApiGym.Services {
             return claseActual;
         }
 
-        [Authorize(Roles = "Instructor")]
         public async Task CrearClase(CrearClaseDTO crearClaseDTO) {
             var UsuarioLogged = _loginService.ObtenerUsuarioAutenticado();
             var instructorLogged = _instructoService.MostrarInstructorPorUserId(UsuarioLogged.Id);
@@ -62,7 +61,6 @@ namespace ApiGym.Services {
             await _context.SaveChangesAsync();
         }
 
-        [Authorize(Roles = "Miembro")]
         public async Task InscribirseClase(int idClase) {
             var UsuarioLogged = _loginService.ObtenerUsuarioAutenticado();
             var miembroLogged = _miembroService.MostrarMiembroPorUserId(UsuarioLogged.Id);
