@@ -47,6 +47,7 @@ namespace ApiGym.Data
             modelBuilder.Entity<Clase>(entity =>{
                 entity.ToTable("Clase");
                 entity.HasKey(c => c.Id);
+                entity.Property(c => c.Id).ValueGeneratedOnAdd();
                 entity.HasOne(c => c.Instructor)
                     .WithMany(i => i.Clases)
                     .HasForeignKey(c => c.instructorId)

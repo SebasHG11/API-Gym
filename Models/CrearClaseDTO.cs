@@ -6,6 +6,6 @@ namespace ApiGym.Models
     {
         public string Nombre { get; set; }
         public DateTime FechaHora { get; set; }
-        public int instructorId { get; set; }
+        public int? instructorId { get; set; }
     }
 }
