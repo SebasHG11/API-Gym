@@ -11,5 +11,6 @@ namespace ApiGym.Models
         [Required]
         public string Especialidad { get; set; }
         public Usuario? Usuario { get; set; }
+        public ICollection<Clase> Clases { get; set; } = new List<Clase>();
     }
 }

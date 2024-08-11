@@ -9,5 +9,6 @@ namespace ApiGym.Models
         [Required]
         public string Nombre { get; set; }
         public Usuario? Usuario { get; set; }
+        public ICollection<MiembroClase> MiembroClases { get; set; } = new List<MiembroClase>();
     }
 }

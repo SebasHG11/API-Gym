@@ -10,6 +10,7 @@ namespace ApiGym.Data
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Miembro> Miembros { get; set; }
         public DbSet<Instructor> Instructors { get; set; }
+        public DbSet<Clase> Clases { get; set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +42,28 @@ namespace ApiGym.Data
                 .WithOne(u => u.Instructor)
                 .HasForeignKey<Instructor>(i => i.UsuarioId)
                 .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Clase>(entity =>{
+                entity.ToTable("Clase");
+                entity.HasKey(c => c.Id);
+                entity.HasOne(c => c.Instructor)
+                    .WithMany(i => i.Clases)
+                    .HasForeignKey(c => c.instructorId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<MiembroClase>(entity => {
+                entity.ToTable("MiembroClase");
+                entity.HasKey(mc => new { mc.MiembroId, mc.ClaseId });
+                entity.HasOne(mc => mc.Miembro)
+                    .WithMany(m => m.MiembroClases)
+                    .HasForeignKey(mc => mc.MiembroId)
+                    .OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(mc => mc.Clase)
+                    .WithMany(c => c.MiembrosClase)
+                    .HasForeignKey(mc => mc.ClaseId)
+                    .OnDelete(DeleteBehavior.NoAction);
             });
         }
     }
