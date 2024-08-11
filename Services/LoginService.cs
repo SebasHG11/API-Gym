@@ -9,10 +9,12 @@ namespace ApiGym.Services {
     public class LoginService : ILoginService {
         private readonly GymContext _context;
         private readonly IConfiguration _config;
-        public LoginService(GymContext context, IConfiguration config) 
+        private readonly IHttpContextAccessor _httpContextAccesor;
+        public LoginService(GymContext context, IConfiguration config, IHttpContextAccessor httpContextAccessor) 
         {
             _context = context;   
             _config = config;
+            _httpContextAccesor = httpContextAccessor;
         }
 
         public Usuario Autenticar(LoginUser loginUser){
@@ -43,9 +45,26 @@ namespace ApiGym.Services {
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public Usuario ObtenerUsuarioAutenticado() {
+            var httpContext = _httpContextAccesor.HttpContext;
+            var identity = httpContext?.User.Identity as ClaimsIdentity;
+
+            if(identity != null) {
+                var userClaims = identity.Claims;
+                return new Usuario
+                {
+                    Id = int.Parse(userClaims.FirstOrDefault(u => u.Type == "Id")?.Value),
+                    UserName = userClaims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)?.Value,
+                    Rol = userClaims.FirstOrDefault(u => u.Type == ClaimTypes.Role)?.Value
+                };
+            }
+            return null;
+        }
     }
     public interface ILoginService{
         Usuario Autenticar(LoginUser loginUser);
         string GenerarToken(Usuario usuario);
+        Usuario ObtenerUsuarioAutenticado();
     }
 }
