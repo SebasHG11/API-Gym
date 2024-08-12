@@ -32,6 +32,7 @@ namespace ApiGym.Services {
 
         public async Task<Clase> MostrarClasePorId(int id) {
             var claseActual = await _context.Clases
+            .Include(c => c.Instructor)
             .Include(c => c.MiembrosClase)
             .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -107,6 +108,41 @@ namespace ApiGym.Services {
             clase.MiembrosClase.Remove(miembroClase);
             await _context.SaveChangesAsync();
         }
+
+        public async Task EliminarClase(int idClase) {
+            var UsuarioLogged = _loginService.ObtenerUsuarioAutenticado();
+            var instructorLogged = await _instructorService.MostrarInstructorPorUserId(UsuarioLogged.Id);
+
+            var claseActual = await _context.Clases
+            .Include(c => c.MiembrosClase)
+            .FirstOrDefaultAsync(c => c.Id == idClase);
+
+            if (claseActual == null) {
+                throw new KeyNotFoundException("La clase especificada no existe.");
+            }   
+
+            if(claseActual.instructorId != instructorLogged.Id) {
+                throw new UnauthorizedAccessException("Solo el instructor que creo la clase puede eliminarla.");
+            }
+
+            using var transaccion = await _context.Database.BeginTransactionAsync();
+
+            try{
+                if(claseActual.MiembrosClase.Any()) {
+                    _context.MiembroClases.RemoveRange(claseActual.MiembrosClase);
+                    await _context.SaveChangesAsync();
+                }
+
+                _context.Clases.Remove(claseActual);
+                await _context.SaveChangesAsync();
+
+                await transaccion.CommitAsync();
+
+            } catch {
+                await transaccion.RollbackAsync();
+                throw;
+            }
+        }
     }
 
     public interface IClaseService {
@@ -114,5 +150,7 @@ namespace ApiGym.Services {
         Task<Clase> MostrarClasePorId(int id);
         Task CrearClase(CrearClaseDTO crearClaseDTO);
         Task InscribirseClase(int idClase);
+        Task DesuscribirseClase(int idClase);
+        Task EliminarClase(int idClase);
     }
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ApiGym.Models
 {
@@ -11,6 +12,7 @@ namespace ApiGym.Models
         [Required]
         public string Especialidad { get; set; }
         public Usuario? Usuario { get; set; }
+        [JsonIgnore]
         public ICollection<Clase> Clases { get; set; } = new List<Clase>();
     }
 }

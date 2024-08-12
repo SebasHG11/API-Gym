@@ -15,7 +15,7 @@ namespace ApiGym.Controllers {
         [HttpGet]
         public IActionResult GetClases() {
             try{
-                return Ok(_claseService.MostrarClases);
+                return Ok(_claseService.MostrarClases());
             } catch(Exception ex) {
                 return BadRequest(new { message = "Error al mostrar las clases", details = ex.Message });
             }
@@ -49,6 +49,28 @@ namespace ApiGym.Controllers {
                 return Ok();
             } catch(Exception ex) {
                 return BadRequest(new { message = "Error al intentar inscribirse a la clase", details = ex.Message });
+            }
+        }
+
+        [HttpDelete("/Clase/Desuscribir/{idClase}")]
+        [Authorize(Roles = "Miembro")]
+        public async Task<IActionResult> DeleteInscripcionClase(int idClase) {
+            try{
+                await _claseService.DesuscribirseClase(idClase);
+                return Ok();
+            } catch (Exception ex) {
+                return BadRequest(new { message = "Error al intertar cancelar la inscripcion", details = ex.Message });
+            }
+        }
+
+        [HttpDelete("Clase/{idClase}")]
+        [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> DeleteClase(int idClase) {
+            try{
+                await _claseService.EliminarClase(idClase);
+                return Ok();
+            }catch (Exception ex) {
+                return BadRequest(new { message = "Error al intentar eliminar la clase", details = ex.Message });
             }
         }
     }
