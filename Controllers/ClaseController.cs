@@ -73,5 +73,16 @@ namespace ApiGym.Controllers {
                 return BadRequest(new { message = "Error al intentar eliminar la clase", details = ex.Message });
             }
         }
+
+        [HttpPut("/Clase/{idClase}")]
+        [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> PutClase(int idClase, [FromBody] EditarClaseDTO editarClaseDTO) {
+            try{
+                await _claseService.EditarClase(idClase, editarClaseDTO);
+                return Ok();
+            } catch(Exception ex) {
+                return BadRequest(new { message = "Error al intentar editar la clase.", details = ex.Message });
+            }
+        }
     }
 }

@@ -146,7 +146,7 @@ namespace ApiGym.Services {
 
         public async Task EditarClase(int idClase, EditarClaseDTO editarClaseDTO) {
             var UsuarioLogged = _loginService.ObtenerUsuarioAutenticado();
-            var instructorLogged = _instructorService.MostrarInstructorPorUserId(UsuarioLogged.Id);
+            var instructorLogged = await _instructorService.MostrarInstructorPorUserId(UsuarioLogged.Id);
 
             var claseActual = await _context.Clases
             .FirstOrDefaultAsync(c => c.Id == idClase);
