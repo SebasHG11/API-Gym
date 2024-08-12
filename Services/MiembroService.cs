@@ -23,10 +23,11 @@ namespace ApiGym.Services {
             return Miembros;
         }
 
-        public MiembroDTO MostrarMiembroPorId(int id) {
-            var MiembroActual = _context.Miembros
+        public async Task<MiembroDTO> MostrarMiembroPorId(int id) {
+            var MiembroActual = await _context.Miembros
                 .Include(m => m.Usuario)
-                .FirstOrDefault(m => m.Id == id);
+                .Include(m => m.MiembroClases)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if(MiembroActual != null) {
                 return new MiembroDTO{
@@ -41,10 +42,11 @@ namespace ApiGym.Services {
             }
         }
 
-        public MiembroDTO MostrarMiembroPorUserId(int userId) {
-            var MiembroActual = _context.Miembros
+        public async Task<MiembroDTO> MostrarMiembroPorUserId(int userId) {
+            var MiembroActual = await _context.Miembros
                 .Include(m => m.Usuario)
-                .FirstOrDefault(m => m.UsuarioId == userId);
+                .Include(m => m.MiembroClases)
+                .FirstOrDefaultAsync(m => m.UsuarioId == userId);
 
             if(MiembroActual != null) {
                 return new MiembroDTO{
@@ -150,8 +152,8 @@ namespace ApiGym.Services {
     }
     public interface IMiembroService {
         IEnumerable<MiembroDTO> MostrarMiembros();
-        MiembroDTO MostrarMiembroPorId(int id);
-        MiembroDTO MostrarMiembroPorUserId(int userId);
+        Task<MiembroDTO> MostrarMiembroPorId(int id);
+        Task<MiembroDTO> MostrarMiembroPorUserId(int userId);
         Task CrearMiembro(MiembroDTO miembroDTO);
         Task EditarMiembro(int id, MiembroDTO miembroDTO);
         Task EliminarMiembro(int id);

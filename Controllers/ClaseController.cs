@@ -21,16 +21,16 @@ namespace ApiGym.Controllers {
             }
         }
 
-        [HttpGet("/clase")]
-        public IActionResult GetClaseById([FromBody] int id) {
+        [HttpGet("/Clase/{id}")]
+        public async Task<IActionResult> GetClaseById(int id) {
             try{
-                return Ok(_claseService.MostrarClasePorId(id));
+                return Ok(await _claseService.MostrarClasePorId(id));
             } catch (Exception ex) {
                 return BadRequest(new { message = "Error al mostrar la clase", details = ex.Message });
             }
         }
 
-        [HttpPost("/Crear")]
+        [HttpPost("/Clase/Crear")]
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> PostClase([FromBody] CrearClaseDTO crearClaseDTO) {
             try{
@@ -41,7 +41,7 @@ namespace ApiGym.Controllers {
             }
         }
 
-        [HttpPost("/Inscribirse/{idClase}")]
+        [HttpPost("/Clase/Inscribirse/{idClase}")]
         [Authorize(Roles = "Miembro")]
         public async Task<IActionResult> PostInscripcionClase(int idClase) {
             try{

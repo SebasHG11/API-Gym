@@ -1,6 +1,5 @@
 using ApiGym.Data;
 using ApiGym.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiGym.Services {
@@ -8,7 +7,7 @@ namespace ApiGym.Services {
         private readonly GymContext _context;
         private readonly ILoginService _loginService;
         private readonly IMiembroService _miembroService;
-        private readonly IInstructorService _instructoService;
+        private readonly IInstructorService _instructorService;
 
         public ClaseService(
             GymContext context,
@@ -20,7 +19,7 @@ namespace ApiGym.Services {
             _context = context;
             _loginService = loginService;
             _miembroService = miembroService;
-            _instructoService = instructorService;
+            _instructorService = instructorService;
         }
 
         public IEnumerable<Clase> MostrarClases() {
@@ -45,7 +44,7 @@ namespace ApiGym.Services {
 
         public async Task CrearClase(CrearClaseDTO crearClaseDTO) {
             var UsuarioLogged = _loginService.ObtenerUsuarioAutenticado();
-            var instructorLogged = _instructoService.MostrarInstructorPorUserId(UsuarioLogged.Id);
+            var instructorLogged = await _instructorService.MostrarInstructorPorUserId(UsuarioLogged.Id);
 
             if(instructorLogged == null) {
                 throw new KeyNotFoundException("El instructor con este ID no fue encontrado");
@@ -63,7 +62,7 @@ namespace ApiGym.Services {
 
         public async Task InscribirseClase(int idClase) {
             var UsuarioLogged = _loginService.ObtenerUsuarioAutenticado();
-            var miembroLogged = _miembroService.MostrarMiembroPorUserId(UsuarioLogged.Id);
+            var miembroLogged = await _miembroService.MostrarMiembroPorUserId(UsuarioLogged.Id);
 
             var claseActual = await _context.Clases
             .Include(c => c.MiembrosClase)
@@ -84,6 +83,28 @@ namespace ApiGym.Services {
 
             claseActual.MiembrosClase.Add(nuevaInscripcion);
 
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DesuscribirseClase(int idClase) {
+            var UsuarioLogged = _loginService.ObtenerUsuarioAutenticado();
+            var miembroLogged = await _miembroService.MostrarMiembroPorUserId(UsuarioLogged.Id);
+
+            var clase = await _context.Clases
+            .Include(c => c.MiembrosClase)
+            .FirstOrDefaultAsync(c => c.Id == idClase);
+
+            if(clase == null) {
+                throw new KeyNotFoundException("La clase buscada con este ID no existe.");
+            }
+
+            var miembroClase = clase.MiembrosClase.FirstOrDefault(mc => mc.MiembroId == miembroLogged.Id);
+
+            if(miembroClase == null) {
+                throw new KeyNotFoundException("El miembro no esta inscrito en esta clase.");
+            }
+   
+            clase.MiembrosClase.Remove(miembroClase);
             await _context.SaveChangesAsync();
         }
     }

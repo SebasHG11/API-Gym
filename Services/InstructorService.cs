@@ -27,10 +27,10 @@ namespace ApiGym.Services {
             return Instructores;
         }
 
-        public InstructorDTO MostrarInstructorPorId(int id) {
-            var instructorActual = _context.Instructors
+        public async Task<InstructorDTO> MostrarInstructorPorId(int id) {
+            var instructorActual = await _context.Instructors
             .Include(i => i.Usuario)
-            .FirstOrDefault(i => i.Id == id);
+            .FirstOrDefaultAsync(i => i.Id == id);
 
             if(instructorActual != null) {
                 return new InstructorDTO {
@@ -47,10 +47,10 @@ namespace ApiGym.Services {
             }
         }
 
-        public InstructorDTO MostrarInstructorPorUserId(int userId) {
-            var instructorActual = _context.Instructors
+        public async Task<InstructorDTO> MostrarInstructorPorUserId(int userId) {
+            var instructorActual = await _context.Instructors
             .Include(i => i.Usuario)
-            .FirstOrDefault(i => i.UsuarioId == userId);
+            .FirstOrDefaultAsync(i => i.UsuarioId == userId);
 
             if(instructorActual != null) {
                 return new InstructorDTO {
@@ -172,8 +172,8 @@ namespace ApiGym.Services {
     }
     public interface IInstructorService {
         IEnumerable<InstructorDTO> MostrarInstructores();
-        InstructorDTO MostrarInstructorPorId(int id);
-        InstructorDTO MostrarInstructorPorUserId(int userId);
+        Task<InstructorDTO> MostrarInstructorPorId(int id);
+        Task<InstructorDTO> MostrarInstructorPorUserId(int userId);
         Task CrearInstructor(InstructorDTO instructorDTO);
         Task EditarInstructor(int id, InstructorDTO instructorDTO);
         Task EliminarInstructor(int id);

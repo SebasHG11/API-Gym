@@ -15,14 +15,14 @@ namespace ApiGym.Controllers {
             return Ok(_instructorService.MostrarInstructores());
         }
 
-        [HttpGet("/instructor")]
-        public IActionResult GetInstructorById(int id) {
-            return Ok(_instructorService.MostrarInstructorPorId(id));
+        [HttpGet("/instructor/{id}")]
+        public async Task<IActionResult> GetInstructorById(int id) {
+            return Ok(await _instructorService.MostrarInstructorPorId(id));
         }
 
         [HttpGet("instructor/userid")]
-        public IActionResult GetInstructorByUserId(int userId) {
-            return Ok(_instructorService.MostrarInstructorPorUserId(userId));
+        public async Task<IActionResult> GetInstructorByUserId(int userId) {
+            return Ok(await _instructorService.MostrarInstructorPorUserId(userId));
         }
 
         [HttpPost]
