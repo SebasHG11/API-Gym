@@ -138,9 +138,34 @@ namespace ApiGym.Services {
 
                 await transaccion.CommitAsync();
 
-            } catch {
+            } catch(Exception ex) {
                 await transaccion.RollbackAsync();
-                throw;
+                throw new Exception("Error al intentar eliminar la clase.", ex);
+            }
+        }
+
+        public async Task EditarClase(int idClase, EditarClaseDTO editarClaseDTO) {
+            var UsuarioLogged = _loginService.ObtenerUsuarioAutenticado();
+            var instructorLogged = _instructorService.MostrarInstructorPorUserId(UsuarioLogged.Id);
+
+            var claseActual = await _context.Clases
+            .FirstOrDefaultAsync(c => c.Id == idClase);
+
+            if(claseActual == null) {
+                throw new KeyNotFoundException("La clase especificada no existe.");
+            }
+
+            if(instructorLogged.Id != claseActual.instructorId) {
+                throw new UnauthorizedAccessException("Solo el instructor que creo la clase puede editarla.");
+            }
+
+            try{
+                claseActual.Nombre = editarClaseDTO.Nombre ?? claseActual.Nombre;
+                claseActual.FechaHora = editarClaseDTO.FechaHora ?? claseActual.FechaHora;
+
+                await _context.SaveChangesAsync();
+            } catch (Exception ex) {
+                throw new Exception("Error al intentar editar la clase.", ex);
             }
         }
     }
@@ -152,5 +177,6 @@ namespace ApiGym.Services {
         Task InscribirseClase(int idClase);
         Task DesuscribirseClase(int idClase);
         Task EliminarClase(int idClase);
+        Task EditarClase(int idClase, EditarClaseDTO editarClaseDTO);
     }
 }

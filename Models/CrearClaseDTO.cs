@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace ApiGym.Models
 {
     public class CrearClaseDTO
