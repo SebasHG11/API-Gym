@@ -115,7 +115,10 @@ namespace ApiGym.Services {
         }
 
         public async Task EliminarMiembro(int id) {
-            var miembroActual = await _context.Miembros.Include(m => m.Usuario).FirstOrDefaultAsync(m => m.Id == id);
+            var miembroActual = await _context.Miembros
+            .Include(m => m.Usuario)
+            .Include(m => m.MiembroClases)
+            .FirstOrDefaultAsync(m => m.Id == id);
 
             if(miembroActual == null) {
                 throw new KeyNotFoundException("El miembro con el ID proporcionado no existe.");
@@ -124,6 +127,13 @@ namespace ApiGym.Services {
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try{
+                var clasesRelacionadas = miembroActual.MiembroClases.ToList();
+
+                if(clasesRelacionadas.Any()) {
+                    _context.MiembroClases.RemoveRange(clasesRelacionadas);
+                    await _context.SaveChangesAsync();
+                }
+
                 _context.Miembros.Remove(miembroActual);
                 await _context.SaveChangesAsync();
 

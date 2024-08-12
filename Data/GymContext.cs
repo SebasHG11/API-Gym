@@ -11,6 +11,7 @@ namespace ApiGym.Data
         public DbSet<Miembro> Miembros { get; set; }
         public DbSet<Instructor> Instructors { get; set; }
         public DbSet<Clase> Clases { get; set;}
+        public DbSet<MiembroClase> MiembroClases { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -2,6 +2,7 @@ using ApiGym.Data;
 using ApiGym.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Any;
 
 namespace ApiGym.Services {
     public class InstructorService: IInstructorService {
@@ -125,11 +126,14 @@ namespace ApiGym.Services {
         public async Task EliminarInstructor(int id) {
             var instructorActual = await _context.Instructors
             .Include(i => i.Usuario)
+            .Include(i => i.Clases)
             .FirstOrDefaultAsync(i => i.Id == id);
 
             if(instructorActual == null) {
                 throw new KeyNotFoundException  ("El usuario con el ID ingresada no existe.");
             }
+
+            var clasesRelacionadas = instructorActual.Clases.ToList();
 
             var usuarioActual = await _context.Usuarios
                 .FirstOrDefaultAsync(u => u.Id == instructorActual.UsuarioId);
@@ -137,6 +141,22 @@ namespace ApiGym.Services {
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try{
+                foreach(var clase in clasesRelacionadas) {
+                    var miembrosRelacionados = await _context.MiembroClases
+                    .Where(mc => mc.ClaseId == clase.Id)
+                    .ToListAsync();
+
+                    if(miembrosRelacionados.Any()) {
+                        _context.MiembroClases.RemoveRange(miembrosRelacionados);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                if(clasesRelacionadas.Any()) {
+                    _context.Clases.RemoveRange(clasesRelacionadas);
+                    await _context.SaveChangesAsync();
+                }
+
                 _context.Instructors.Remove(instructorActual);
                 await _context.SaveChangesAsync();
 
